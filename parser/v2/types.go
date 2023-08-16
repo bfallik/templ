@@ -281,7 +281,8 @@ type Element struct {
 }
 
 var voidElements = map[string]struct{}{
-	"area": {}, "base": {}, "br": {}, "col": {}, "command": {}, "embed": {}, "hr": {}, "img": {}, "input": {}, "keygen": {}, "link": {}, "meta": {}, "param": {}, "source": {}, "track": {}, "wbr": {}}
+	"area": {}, "base": {}, "br": {}, "col": {}, "command": {}, "embed": {}, "hr": {}, "img": {}, "input": {}, "keygen": {}, "link": {}, "meta": {}, "param": {}, "source": {}, "track": {}, "wbr": {},
+}
 
 // https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-element
 func (e Element) IsVoidElement() bool {
