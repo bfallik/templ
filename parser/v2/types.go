@@ -195,8 +195,20 @@ type ConstantCSSProperty struct {
 }
 
 func (c ConstantCSSProperty) IsCSSProperty() bool { return true }
-func (c ConstantCSSProperty) String() string {
-	return fmt.Sprintf("%s: %s;\n", c.Name, c.Value)
+func (c ConstantCSSProperty) String(minified bool) string {
+	var sb strings.Builder
+	sb.WriteString(c.Name)
+	if minified {
+		sb.WriteString(":")
+	} else {
+		sb.WriteString(": ")
+	}
+	sb.WriteString(c.Value)
+	sb.WriteString(";")
+	if !minified {
+		sb.WriteString("\n")
+	}
+	return sb.String()
 }
 
 // background-color: { constants.BackgroundColor };
