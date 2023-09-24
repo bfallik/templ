@@ -293,27 +293,25 @@ func (attributesParser) Parse(in *parse.Input) (attributes []Attribute, ok bool,
 }
 
 // Element name.
-var (
-	elementNameFirst      = "abcdefghijklmnopqrstuvwxyz"
-	elementNameSubsequent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
-	elementNameParser     = parse.Func(func(in *parse.Input) (name string, ok bool, err error) {
-		start := in.Index()
-		var prefix, suffix string
-		if prefix, ok, err = parse.RuneIn(elementNameFirst).Parse(in); err != nil || !ok {
-			return
-		}
-		if suffix, ok, err = parse.StringUntil(parse.RuneNotIn(elementNameSubsequent)).Parse(in); err != nil || !ok {
-			in.Seek(start)
-			return
-		}
-		if len(suffix)+1 > 16 {
-			ok = false
-			err = parse.Error("element property names must be < 16 characters long", in.Position())
-			return
-		}
-		return prefix + suffix, true, nil
-	})
-)
+var elementNameFirst = parse.RuneIn("abcdefghijklmnopqrstuvwxyz")
+var elementNameSubsequent = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-"
+var elementNameParser = parse.Func(func(in *parse.Input) (name string, ok bool, err error) {
+	start := in.Index()
+	var prefix, suffix string
+	if prefix, ok, err = elementNameFirst.Parse(in); err != nil || !ok {
+		return
+	}
+	if suffix, ok, err = parse.StringUntil(parse.RuneNotIn(elementNameSubsequent)).Parse(in); err != nil || !ok {
+		in.Seek(start)
+		return
+	}
+	if len(suffix)+1 > 16 {
+		ok = false
+		err = parse.Error("element property names must be < 16 characters long", in.Position())
+		return
+	}
+	return prefix + suffix, true, nil
+})
 
 // Element.
 var elementOpenClose elementOpenCloseParser

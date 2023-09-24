@@ -170,7 +170,7 @@ func (css CSSTemplate) Write(w *IndentWriter) error {
 	{
 		w.indent++
 		for _, p := range css.Properties {
-			if err := w.WriteStrings(p.String(), "\n"); err != nil {
+			if err := w.WriteStrings(p.String(false)); err != nil {
 				return err
 			}
 		}
@@ -185,7 +185,7 @@ func (css CSSTemplate) Write(w *IndentWriter) error {
 // CSSProperty is a CSS property and value pair.
 type CSSProperty interface {
 	IsCSSProperty() bool
-	String() string
+	String(minified bool) string
 }
 
 // color: #ffffff;
@@ -196,19 +196,12 @@ type ConstantCSSProperty struct {
 
 func (c ConstantCSSProperty) IsCSSProperty() bool { return true }
 func (c ConstantCSSProperty) String(minified bool) string {
-	var sb strings.Builder
-	sb.WriteString(c.Name)
-	if minified {
-		sb.WriteString(":")
-	} else {
-		sb.WriteString(": ")
-	}
-	sb.WriteString(c.Value)
-	sb.WriteString(";")
+	var space, terminator string
 	if !minified {
-		sb.WriteString("\n")
+		space = " "
+		terminator = "\n"
 	}
-	return sb.String()
+	return fmt.Sprintf("%s:%s%s;%s", c.Name, space, c.Value, terminator)
 }
 
 // background-color: { constants.BackgroundColor };
@@ -218,8 +211,13 @@ type ExpressionCSSProperty struct {
 }
 
 func (c ExpressionCSSProperty) IsCSSProperty() bool { return true }
-func (c ExpressionCSSProperty) String() string {
-	return fmt.Sprintf("%s: %s;\n", c.Name, c.Value.Expression.Value)
+func (c ExpressionCSSProperty) String(minified bool) string {
+	var space, terminator string
+	if !minified {
+		space = " "
+		terminator = "\n"
+	}
+	return fmt.Sprintf("%s:%s%s;%s", c.Name, space, c.Value.Expression.Value, terminator)
 }
 
 // <!DOCTYPE html>
